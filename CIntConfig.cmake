@@ -4,22 +4,19 @@ project(CInt LANGUAGES C CXX Fortran)
 # Set the alignment length
 set(alignlen 64 CACHE STRING "Alignment length")
 
-# Compiler settings
-#set(CMAKE_C_COMPILER "icc")
-#set(CMAKE_CXX_COMPILER "icpc")
-#set(CMAKE_Fortran_COMPILER "ifort")
-#set(CMAKE_AR "xiar rcs")
-find_package(SIMINT REQUIRED)
+find_package(simint REQUIRED)
+message(STATUS "SIMINT_FOUND: ${SIMINT_FOUND}")
 
 # Optimization flags
 set(OPTFLAGS "-m64" CACHE STRING "Optimization flags")
+set(CInt_INCLUDE_DIRS "${CInt_CMAKE_DIR}/include")
 
 # Source files
-set(SRC
-    cint_basisset.c
-    erd_integral.c
-    oed_integral.c
-    cint_simint.c
+set(CInt_SRC
+    ${CMAKE_CURRENT_LIST_DIR}/cint_basisset.c
+    ${CMAKE_CURRENT_LIST_DIR}/erd_integral.c
+    ${CMAKE_CURRENT_LIST_DIR}/oed_integral.c
+    ${CMAKE_CURRENT_LIST_DIR}/cint_simint.c
 )
 
 # Include directories
@@ -29,10 +26,10 @@ include_directories(${SIMINT_DIR}/include
     )
 
 # Compiler flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -qopenmp -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -qopenmp -g -diag-disable=10441")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas -Wunused-variable")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPTFLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__ALIGNLEN__=${alignlen}")
 
 # The libcint library
-add_library(libcint STATIC ${SRC})
+add_library(cint STATIC ${CInt_SRC})

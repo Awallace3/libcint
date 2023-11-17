@@ -21,6 +21,13 @@
 
 #include <stdio.h>
 
+#ifndef _mm_malloc
+#include <stdlib.h>
+#define _mm_malloc(size, align)  std::aligned_alloc(alignment, size)
+#define _mm_free(addr)  free(addr)
+#endif
+
+
 
 #ifndef __APPLE__
 #define HAS_MALLOC_H
