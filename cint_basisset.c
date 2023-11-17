@@ -28,24 +28,6 @@
 #include <cint_config.h>
 #include <cint_basisset.h>
 
-#ifndef _mm_malloc
-#include <stdlib.h>
-
-void* _mm_malloc(size_t size, size_t alignment) {
-    void *ptr;
-    if (posix_memalign(&ptr, alignment, size) != 0) {
-        return NULL;
-    }
-    return ptr;
-}
-#endif
-
-#ifndef _mm_free
-void _mm_free(void *ptr) {
-    free(ptr);
-}
-#endif
-
 
 #ifdef HAS_MALLOC_H
 #include <malloc.h>

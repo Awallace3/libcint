@@ -23,7 +23,7 @@
 
 #ifndef _mm_malloc
 #include <stdlib.h>
-#define _mm_malloc(size, align)  std::aligned_alloc(alignment, size)
+#define _mm_malloc(size, alignment)  aligned_alloc(alignment, size)
 #define _mm_free(addr)  free(addr)
 #endif
 
