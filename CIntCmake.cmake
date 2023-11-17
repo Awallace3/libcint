@@ -9,6 +9,7 @@ set(alignlen 64 CACHE STRING "Alignment length")
 #set(CMAKE_CXX_COMPILER "icpc")
 #set(CMAKE_Fortran_COMPILER "ifort")
 #set(CMAKE_AR "xiar rcs")
+find_package(SIMINT REQUIRED)
 
 # Optimization flags
 set(OPTFLAGS "-m64" CACHE STRING "Optimization flags")
