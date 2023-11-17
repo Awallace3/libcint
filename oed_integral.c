@@ -39,7 +39,7 @@ static void config_oed (OED_t  oed, int A, int B, BasisSet_t basis)
     cc_offset_B = basis->nexp[A];
     oed->ncoeff = alpha_offset_B + basis->nexp[B];
     oed->nalpha = cc_offset_B + basis->nexp[B];
-    
+
     memcpy (&(oed->alpha[alpha_offset_A]), basis->exp[A], sizeof(double) * basis->nexp[A]);
     memcpy (&(oed->alpha[alpha_offset_B]), basis->exp[B], sizeof(double) * basis->nexp[B]);
     memcpy (&(oed->cc[cc_offset_A]), basis->cc[A], sizeof(double) * basis->nexp[A]);
@@ -48,7 +48,7 @@ static void config_oed (OED_t  oed, int A, int B, BasisSet_t basis)
     oed->npgto1 = basis->nexp[A];
     oed->npgto2 = basis->nexp[B];
     oed->cc_end[0] = oed->npgto1;
-    oed->cc_end[1] = oed->npgto2;    
+    oed->cc_end[1] = oed->npgto2;
     oed->x1 = basis->xyz0[A*4];
     oed->y1 = basis->xyz0[A*4+1];
     oed->z1 = basis->xyz0[A*4+2];
@@ -68,13 +68,13 @@ static void oed_max_scratch (BasisSet_t basis, OED_t oed)
     int int_memory_opt = 0;
     int fp_memory_min = 0;
     int fp_memory_opt = 0;
-    
+
     _maxMomentum (basis, &max_momentum);
     _maxPrimid (basis, &max_primid);
-    
+
     config_oed (oed,
                 max_primid, max_primid,
-                basis); 
+                basis);
 
     oed->shell1 = max_momentum;
     oed->shell2 = max_momentum;
@@ -112,16 +112,16 @@ static void oed_max_scratch (BasisSet_t basis, OED_t oed)
             oed->int_memory_opt : int_memory_opt;
     oed->fp_memory_opt = oed->fp_memory_opt > fp_memory_opt ?
             oed->fp_memory_opt : fp_memory_opt;
-    
+
     oed__memory_nai_batch_ (&(oed->nalpha), &(oed->ncoeff),
                             &(oed->ncgto1), &(oed->ncgto2),
                             &(oed->npgto1), &(oed->npgto2),
                             &(oed->shell1), &(oed->shell2),
                             &(oed->x1), &(oed->y1), &(oed->z1),
                             &(oed->x2), &(oed->y2), &(oed->z2),
-                            &(oed->natoms), oed->alpha, oed->cc, &(oed->spheric),                          
+                            &(oed->natoms), oed->alpha, oed->cc, &(oed->spheric),
                             &int_memory_min, &int_memory_opt,
-                            &fp_memory_min, &fp_memory_opt);     
+                            &fp_memory_min, &fp_memory_opt);
     oed->int_memory_opt = oed->int_memory_opt > int_memory_opt ?
             oed->int_memory_opt : int_memory_opt;
     oed->fp_memory_opt = oed->fp_memory_opt > fp_memory_opt ?
@@ -133,7 +133,7 @@ CIntStatus_t CInt_createOED (BasisSet_t basis, OED_t *oed)
 {
     OED_t o;
     int max_nexp;
-    
+
     o = (OED_t )calloc (1, sizeof(struct OED));
     CINT_ASSERT(o != NULL);
     o->ncsum = 2;
@@ -148,7 +148,7 @@ CIntStatus_t CInt_createOED (BasisSet_t basis, OED_t *oed)
     o->charge = basis->charge;
     o->spheric = OED_SPHERIC;
     o->screen = OED_SCREEN;
-    
+
     _maxnumExp (basis, &max_nexp);
     o->cc = (double *)malloc (2 * max_nexp * sizeof(double));
     o->alpha = (double *)malloc (2 * max_nexp * sizeof(double));
@@ -158,7 +158,7 @@ CIntStatus_t CInt_createOED (BasisSet_t basis, OED_t *oed)
     o->exp_offset = (int *)malloc (basis->nshells * sizeof(int));
     CINT_ASSERT(o->coef_offset != NULL);
     CINT_ASSERT(o->exp_offset != NULL);
-        
+
     oed_max_scratch (basis, o);
     o->zcore = (double *)malloc (o->fp_memory_opt * sizeof(double));
     o->zcore2 = (double *)malloc (o->fp_memory_opt * sizeof(double));
@@ -166,10 +166,10 @@ CIntStatus_t CInt_createOED (BasisSet_t basis, OED_t *oed)
     CINT_ASSERT(o->zcore != NULL);
     CINT_ASSERT(o->zcore2 != NULL);
     CINT_ASSERT(o->icore != NULL);
-    
+
     o->zmax = o->fp_memory_opt;
     o->imax = o->int_memory_opt;
-    
+
     *oed = o;
 
     return CINT_STATUS_SUCCESS;
@@ -196,7 +196,7 @@ CIntStatus_t CInt_computePairKin (BasisSet_t basis, OED_t oed,
                                   double **integrals, int *nints)
 {
     int nfirst;
-    
+
     if (A < 0 || A >= basis->nshells ||
         B < 0 || B >= basis->nshells)
     {
@@ -220,9 +220,9 @@ CIntStatus_t CInt_computePairKin (BasisSet_t basis, OED_t oed,
                             oed->alpha, oed->cc, &(oed->spheric),
                             &int_memory_min, &int_memory_opt,
                             &fp_memory_min, &fp_memory_opt);
-    
+
     assert (fp_memory_opt <= oed->fp_memory_opt);
-    assert (int_memory_opt <= oed->int_memory_opt);   
+    assert (int_memory_opt <= oed->int_memory_opt);
 #endif
 
     oed__gener_kin_batch_ (&(oed->imax), &(oed->zmax),
@@ -246,14 +246,14 @@ CIntStatus_t CInt_computePairOvl (BasisSet_t basis, OED_t oed,
                                   double **integrals, int *nints)
 {
     int nfirst;
-    
+
     if (A < 0 || A >= basis->nshells ||
         B < 0 || B >= basis->nshells)
     {
         CINT_PRINTF (1, "invalid shell indices\n");
         return CINT_STATUS_INVALID_VALUE;
     }
-    
+
     config_oed (oed, A, B, basis);
 
 #if ( _DEBUG_LEVEL_ == 3 )
@@ -270,9 +270,9 @@ CIntStatus_t CInt_computePairOvl (BasisSet_t basis, OED_t oed,
                             oed->alpha, oed->cc, &(oed->spheric),
                             &int_memory_min, &int_memory_opt,
                             &fp_memory_min, &fp_memory_opt);
-    
+
     assert (fp_memory_opt <= oed->fp_memory_opt);
-    assert (int_memory_opt <= oed->int_memory_opt);   
+    assert (int_memory_opt <= oed->int_memory_opt);
 #endif
 
     oed__gener_ovl_batch_ (&(oed->imax), &(oed->zmax),
@@ -286,7 +286,7 @@ CIntStatus_t CInt_computePairOvl (BasisSet_t basis, OED_t oed,
                            &(oed->spheric), &(oed->screen),
                            oed->icore, nints, &nfirst, oed->zcore);
 
-    *integrals = &(oed->zcore[nfirst - 1]);  
+    *integrals = &(oed->zcore[nfirst - 1]);
     return CINT_STATUS_SUCCESS;
 }
 
@@ -302,7 +302,7 @@ CIntStatus_t CInt_computePairPot (BasisSet_t basis, OED_t oed,
         CINT_PRINTF (1, "invalid shell indices\n");
         return CINT_STATUS_INVALID_VALUE;
     }
-    
+
     config_oed (oed, A, B, basis);
 
 #if ( _DEBUG_LEVEL_ == 3 )
@@ -319,9 +319,9 @@ CIntStatus_t CInt_computePairPot (BasisSet_t basis, OED_t oed,
                             &(oed->natoms), oed->alpha, oed->cc, &(oed->spheric),
                             &int_memory_min, &int_memory_opt,
                             &fp_memory_min, &fp_memory_opt);
-    
+
     assert (fp_memory_opt <= oed->fp_memory_opt);
-    assert (int_memory_opt <= oed->int_memory_opt);   
+    assert (int_memory_opt <= oed->int_memory_opt);
 #endif
 
     oed__gener_nai_batch_ (&(oed->imax), &(oed->zmax),
@@ -359,7 +359,7 @@ CIntStatus_t CInt_computePairCoreH (BasisSet_t basis, OED_t oed,
         CINT_PRINTF (1, "invalid shell indices\n");
         return CINT_STATUS_INVALID_VALUE;
     }
-    
+
     config_oed (oed, A, B, basis);
 
 #if ( _DEBUG_LEVEL_ == 3 )
@@ -390,7 +390,7 @@ CIntStatus_t CInt_computePairCoreH (BasisSet_t basis, OED_t oed,
                             &fp_memory_min, &fp_memory_opt);
 
     assert (fp_memory_opt <= oed->fp_memory_opt);
-    assert (int_memory_opt <= oed->int_memory_opt);   
+    assert (int_memory_opt <= oed->int_memory_opt);
 #endif
 
     oed__gener_kin_batch_ (&(oed->imax), &(oed->zmax),
@@ -403,7 +403,7 @@ CIntStatus_t CInt_computePairCoreH (BasisSet_t basis, OED_t oed,
                            oed->alpha, oed->cc, oed->cc_beg, oed->cc_end,
                            &(oed->spheric), &(oed->screen),
                            oed->icore, &ni2, &nfirst2, oed->zcore2);
-    
+
     oed__gener_nai_batch_ (&(oed->imax), &(oed->zmax),
                            &(oed->nalpha), &(oed->ncoeff), &(oed->ncsum),
                            &(oed->ncgto1), &(oed->ncgto2),
@@ -434,7 +434,7 @@ CIntStatus_t CInt_computePairCoreH (BasisSet_t basis, OED_t oed,
     {
         for (i = 0; i < ni; i++)
         {
-            oed->zcore[nfirst - 1 + i] += oed->zcore2[nfirst2 - 1 + i];           
+            oed->zcore[nfirst - 1 + i] += oed->zcore2[nfirst2 - 1 + i];
         }
         *nints = ni;
     }
@@ -451,6 +451,6 @@ CIntStatus_t CInt_computePairCoreH (BasisSet_t basis, OED_t oed,
     {
         *nints = 0;
     }
-    
+
     return CINT_STATUS_SUCCESS;
 }

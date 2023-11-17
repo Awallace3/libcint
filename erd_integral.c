@@ -35,7 +35,7 @@ static void erd_max_scratch(BasisSet_t basis, ERD_t erd) {
     const int max_momentum = basis->max_momentum;
     const int max_primid = basis->max_nexp_id;
     const int maxnpgto = basis->nexp[max_primid];
-        
+
     if (max_momentum < 2) {
         erd->capacity = 81;
     } else {
@@ -92,7 +92,7 @@ static CIntStatus_t destroy_vrrtable(ERD_t erd) {
 }
 
 
-CIntStatus_t CInt_createERD(BasisSet_t basis, ERD_t *erd, int nthreads) {      
+CIntStatus_t CInt_createERD(BasisSet_t basis, ERD_t *erd, int nthreads) {
     CINT_ASSERT(nthreads > 0);
 
     // malloc erd
@@ -122,9 +122,9 @@ CIntStatus_t CInt_createERD(BasisSet_t basis, ERD_t *erd, int nthreads) {
 }
 
 
-CIntStatus_t CInt_destroyERD(ERD_t erd, int show_wtime) 
+CIntStatus_t CInt_destroyERD(ERD_t erd, int show_wtime)
 {
-    for (uint32_t i = 0; i < erd->nthreads; i++) 
+    for (uint32_t i = 0; i < erd->nthreads; i++)
         ALIGNED_FREE(erd->buffer[i]);
     free(erd->buffer);
 
@@ -163,7 +163,7 @@ CIntStatus_t CInt_computeShellQuartet( BasisSet_t basis, ERD_t erd, int tid,
         CINT_PRINTF(1, "invalid thread id\n");
 #endif
         *nints = 0;
-        return CINT_STATUS_INVALID_VALUE;    
+        return CINT_STATUS_INVALID_VALUE;
     }
 #endif
 

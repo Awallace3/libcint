@@ -61,7 +61,7 @@ struct SIMINT
 };
 
 // CInt_createSIMINT is called by all nodes.
-// All nodes have a copy of the BasisSet_t structure here and will form and 
+// All nodes have a copy of the BasisSet_t structure here and will form and
 // store the Simint shells for all shells of the molecule.
 
 // for Simint, caller provides memory where integrals will be stored;
@@ -90,8 +90,8 @@ CIntStatus_t CInt_createSIMINT(BasisSet_t basis, SIMINT_t *simint, int nthreads)
     maxsize = (maxsize + 7) / 8 * 8;   // Align to 8 double (64 bytes)
 
     // Output buffer should holds SIMINT_NSHELL_SIMD ERI results
-    // +8 for Simint primitive screening statistic info 
-    s->outmem_per_thread = maxsize * _SIMINT_NSHELL_SIMD + 8;  
+    // +8 for Simint primitive screening statistic info
+    s->outmem_per_thread = maxsize * _SIMINT_NSHELL_SIMD + 8;
     s->outbuf = (double *) _mm_malloc(s->outmem_per_thread * nthreads * sizeof(double), 64);
     CINT_ASSERT(s->outbuf != NULL);
 
@@ -104,7 +104,7 @@ CIntStatus_t CInt_createSIMINT(BasisSet_t basis, SIMINT_t *simint, int nthreads)
     for (int i=0; i<basis->nshells; i++)
     {
         // Initialize variables in structure
-        simint_initialize_shell(shell_p); 
+        simint_initialize_shell(shell_p);
 
         // Allocate space for alpha and coef for the shell
         simint_allocate_shell(basis->nexp[i], shell_p);
@@ -148,7 +148,7 @@ CIntStatus_t CInt_createSIMINT(BasisSet_t basis, SIMINT_t *simint, int nthreads)
             simint_create_multi_shellpair(1, s->shells+i, 1, s->shells+j, pair, s->screen_method);
         }
     }
-    
+
     // Reset timer
     s->ostei_setup   = 0.0;
     s->ostei_actual  = 0.0;
@@ -171,7 +171,7 @@ CIntStatus_t CInt_createSIMINT(BasisSet_t basis, SIMINT_t *simint, int nthreads)
     memset(s->num_unscreened_prim,  0, stat_info_size);
     memset(s->num_screened_vec,     0, stat_info_size);
     memset(s->num_unscreened_vec,   0, stat_info_size);
-    
+
     *simint = s;
     return CINT_STATUS_SUCCESS;
 }
@@ -194,12 +194,12 @@ CIntStatus_t CInt_destroySIMINT(SIMINT_t simint, int show_stat)
     double avg_nprim = sum_nprim / sum_msp;
     double prim_unscreen_ratio = unscreened_prim / total_prim;
     double vec_unscreen_ratio  = unscreened_vec  / total_vec;
-    
+
     // Print timer and statistic info
     if (show_stat)
     {
         printf(
-            "Timer: OSTEI setup, OSTEI actual, fock_task update_F = %lf, %lf, %lf sec\n", 
+            "Timer: OSTEI setup, OSTEI actual, fock_task update_F = %lf, %lf, %lf sec\n",
             simint->ostei_setup, simint->ostei_actual, simint->fock_update_F
         );
         printf(
@@ -250,10 +250,10 @@ void CInt_SIMINT_createThreadMultishellpair(void **thread_multi_shellpair)
     struct simint_multi_shellpair *multi_shellpair;
     multi_shellpair = (struct simint_multi_shellpair *) malloc(sizeof(struct simint_multi_shellpair));
     CINT_ASSERT(multi_shellpair != NULL);
-    
+
     // Need not to worry about memory allocation, it will be handled later
     simint_initialize_multi_shellpair(multi_shellpair);
-    
+
     *thread_multi_shellpair = multi_shellpair;
 }
 
@@ -261,14 +261,14 @@ void CInt_SIMINT_freeThreadMultishellpair(void **thread_multi_shellpair)
 {
     struct simint_multi_shellpair *multi_shellpair = *thread_multi_shellpair;
     CINT_ASSERT(multi_shellpair != NULL);
-    
+
     simint_free_multi_shellpair(multi_shellpair);
-    
+
     free(multi_shellpair);
 }
 
 static void CInt_SIMINT_fillMultishellpairByShellList(
-    SIMINT_t simint, int npairs, int *P_list, int *Q_list, 
+    SIMINT_t simint, int npairs, int *P_list, int *Q_list,
     struct simint_multi_shellpair *multi_shellpair
 )
 {
@@ -281,12 +281,12 @@ static void CInt_SIMINT_fillMultishellpairByShellList(
         int Q = Q_list[ipair];
         Pin[ipair] = &simint->shellpairs[P * simint->nshells + Q];
     }
-    
+
     // Reset output multi_shellpair and copy from existing multi_shellpairs.
     // simint_cat_multi_shellpair() will check and allocate memory for output
     multi_shellpair->nprim = 0;
     simint_cat_shellpairs(
-        npairs, (const struct simint_multi_shellpair **) Pin, 
+        npairs, (const struct simint_multi_shellpair **) Pin,
         multi_shellpair, simint->screen_method
     );
 }
@@ -294,7 +294,7 @@ static void CInt_SIMINT_fillMultishellpairByShellList(
 // Compute ( M N | P_list[i] Q_list[i] ), i = 0, ..., npairs - 1
 // AM(P_list[:]) are the same, and AM(Q_list[:]) are the same
 // (P_list[:], Q_list[:]) will be packed as a simint_multi_shelpair.
-CIntStatus_t 
+CIntStatus_t
 CInt_computeShellQuartetBatch_SIMINT(
     SIMINT_t simint, int tid,
     int M, int N, int *P_list, int *Q_list,
@@ -303,35 +303,35 @@ CInt_computeShellQuartetBatch_SIMINT(
 )
 {
     double setup_start, setup_end, ostei_start, ostei_end;
-    
+
     int ret, size;
 
     if (tid == 0) setup_start = CInt_get_walltime_sec();
 
     struct simint_multi_shellpair *bra_pair_p = &simint->shellpairs[M * simint->nshells + N];
-    
+
     struct simint_multi_shellpair *multi_shellpair = (struct simint_multi_shellpair *) *thread_multi_shellpair;
     assert(multi_shellpair != NULL);
-    
+
     CInt_SIMINT_fillMultishellpairByShellList(simint, npairs, P_list, Q_list, multi_shellpair);
-    
+
     simint->num_multi_shellpairs[tid] += 1.0;
     simint->sum_nprim[tid] += (double) multi_shellpair->nprim;
-    
-    if (tid == 0) 
+
+    if (tid == 0)
     {
         setup_end   = CInt_get_walltime_sec();
         ostei_start = CInt_get_walltime_sec();
     }
-    
+
     ret = simint_compute_eri(
         bra_pair_p, multi_shellpair, simint->screen_tol,
         &simint->workbuf[tid*simint->workmem_per_thread],
         &simint->outbuf [tid*simint->outmem_per_thread]
     );
-    
+
     if (tid == 0) ostei_end = CInt_get_walltime_sec();
-    
+
     if (ret <= 0)
     {
         size = 0; // Return zero size to caller; output buffer is not initialized
@@ -344,18 +344,18 @@ CInt_computeShellQuartetBatch_SIMINT(
                 (shells[P].am+1)*(shells[P].am+2)/2 *
                 (shells[Q].am+1)*(shells[Q].am+2)/2;
     }
-    
+
     // Shells in P_list[] have same AM, shells in Q_list[] have same AM,
     // The result sizes for each quartets are the same
     *thread_batch_integrals = &simint->outbuf[tid*simint->outmem_per_thread];
     *thread_batch_nints     = size;
-    
+
     double *prim_screen_stat_info = *thread_batch_integrals + size * npairs;
     simint->num_unscreened_prim[tid] += prim_screen_stat_info[0];
     simint->num_screened_prim[tid]   += prim_screen_stat_info[1];
     simint->num_unscreened_vec[tid]  += prim_screen_stat_info[2];
     simint->num_screened_vec[tid]    += prim_screen_stat_info[3];
-    
+
     if (tid == 0)
     {
         simint->ostei_setup  += setup_end - setup_start;
@@ -366,13 +366,13 @@ CInt_computeShellQuartetBatch_SIMINT(
 }
 
 // Compute a shell quartet (AB|CD) at a time
-CIntStatus_t 
+CIntStatus_t
 CInt_computeShellQuartet_SIMINT(SIMINT_t simint, int tid,
                                 int A, int B, int C, int D,
                                 double **integrals, int *nints)
 {
     double setup_start, setup_end, ostei_start, ostei_end;
-    
+
     int size, ret;
     struct simint_multi_shellpair *bra_pair_p;
     struct simint_multi_shellpair *ket_pair_p;
@@ -381,25 +381,25 @@ CInt_computeShellQuartet_SIMINT(SIMINT_t simint, int tid,
 
     bra_pair_p = &simint->shellpairs[A*simint->nshells + B];
     ket_pair_p = &simint->shellpairs[C*simint->nshells + D];
-    
+
     simint->num_multi_shellpairs[tid] += 1.0;
     simint->sum_nprim[tid] += (double) ket_pair_p->nprim;
 
-    if (tid == 0) 
+    if (tid == 0)
     {
         setup_end   = CInt_get_walltime_sec();
         ostei_start = CInt_get_walltime_sec();
     }
-    
+
     ret = simint_compute_eri(
         bra_pair_p, ket_pair_p, simint->screen_tol,
         &simint->workbuf[tid * simint->workmem_per_thread],
         &simint->outbuf [tid * simint->outmem_per_thread]
     );
-    
+
     if (tid == 0) ostei_end = CInt_get_walltime_sec();
-    
-    if (ret < 0) 
+
+    if (ret < 0)
     {
         size = 0; // Return zero size to caller; output buffer is not initialized
     } else {
@@ -413,7 +413,7 @@ CInt_computeShellQuartet_SIMINT(SIMINT_t simint, int tid,
 
     *integrals = &simint->outbuf[tid*simint->outmem_per_thread];
     *nints = size;
-    
+
     double *prim_screen_stat_info = *integrals + size;
     simint->num_unscreened_prim[tid] += prim_screen_stat_info[0];
     simint->num_screened_prim[tid]   += prim_screen_stat_info[1];

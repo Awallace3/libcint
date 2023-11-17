@@ -57,7 +57,7 @@ static char etable[ELEN][MAXATOMNAME + 1] =
 
 static char mtable[SLEN] =
 {
-  'S',  'P', 'D', 'F', 'G' 
+  'S',  'P', 'D', 'F', 'G'
 };
 
 
@@ -102,7 +102,7 @@ static void normalization (BasisSet_t basis)
             {
                 a1 = basis->bs_exp[i][j];
                 a2 = basis->bs_exp[i][k];
-                temp = basis->bs_cc[i][j] * basis->bs_cc[i][k]; 
+                temp = basis->bs_cc[i][j] * basis->bs_cc[i][k];
                 temp2 = basis->bs_momentum[i] + 1.5;
                 temp3 = 2.0 * sqrt (a1 * a2) / (a1 + a2);
                 temp3 = pow (temp3, temp2);
@@ -128,8 +128,8 @@ static void normalization (BasisSet_t basis)
             {
                 basis->bs_norm[i][j] = pow (basis->bs_exp[i][j], power);
             }
-        }              
-    }    
+        }
+    }
 }
 
 
@@ -147,7 +147,7 @@ void _maxPrimid (BasisSet_t basis, int *max_primid)
 
 void _maxnumExp (BasisSet_t basis, int *max_nexp)
 {
-    *max_nexp = basis->max_nexp;   
+    *max_nexp = basis->max_nexp;
 }
 
 
@@ -199,11 +199,11 @@ CIntStatus_t CInt_destroyBasisSet (BasisSet_t basis)
             free (basis->guess[i]);
         }
         free (basis->guess);
-    }    
+    }
     free (basis->eid);
     free (basis->xn);
     free (basis->yn);
-    free (basis->zn);   
+    free (basis->zn);
     free (basis->charge);
     free (basis->bs_eptr);
     free (basis->bs_atom_start);
@@ -226,7 +226,7 @@ CIntStatus_t CInt_destroyBasisSet (BasisSet_t basis)
 CIntStatus_t parse_molecule (BasisSet_t basis)
 {
     int natoms;
-    int nshells;   
+    int nshells;
     int nfunctions;
     int maxdim;
     int max_momentum;
@@ -245,7 +245,7 @@ CIntStatus_t parse_molecule (BasisSet_t basis)
         atom_end = basis->bs_atom_start[basis->bs_eptr[eid - 1] + 1];
         nshells += atom_end - atom_start;
     }
-    
+
     // start of shell info for each atom
     basis->s_start_id = (uint32_t *)malloc (sizeof(uint32_t) * (natoms + 1));
     // start and end indices of the functions for each shell;
@@ -283,7 +283,7 @@ CIntStatus_t parse_molecule (BasisSet_t basis)
     max_nexp = 0;
     max_nexp_id = 0;
     for (uint32_t i = 0; i < natoms; i++) {
-        eid = basis->eid[i];    
+        eid = basis->eid[i];
         atom_start = basis->bs_atom_start[basis->bs_eptr[eid - 1]];
         atom_end   = basis->bs_atom_start[basis->bs_eptr[eid - 1] + 1];
         /* Atom not supported */
@@ -326,7 +326,7 @@ CIntStatus_t parse_molecule (BasisSet_t basis)
     basis->max_momentum       = max_momentum; // max angular momentum
     basis->max_nexp           = max_nexp;     // max number of primitives per shell
     basis->max_nexp_id        = max_nexp_id;  // index of the above
-    
+
     return CINT_STATUS_SUCCESS;
 }
 
@@ -355,7 +355,7 @@ CIntStatus_t CInt_unpackBasisSet (BasisSet_t basis, void *buf)
     basis->xn = (double *)malloc(sizeof(double) * basis->natoms);
     basis->yn = (double *)malloc(sizeof(double) * basis->natoms);
     basis->zn = (double *)malloc(sizeof(double) * basis->natoms);
-    basis->charge = (double *)malloc(sizeof(double) * basis->natoms); 
+    basis->charge = (double *)malloc(sizeof(double) * basis->natoms);
     basis->eid = (int *)malloc(sizeof(int) * basis->natoms);
     CINT_ASSERT(basis->xn != NULL);
     CINT_ASSERT(basis->yn != NULL);
@@ -376,7 +376,7 @@ CIntStatus_t CInt_unpackBasisSet (BasisSet_t basis, void *buf)
     basis->bs_exp = (double **)malloc(sizeof(double *) * basis->bs_nshells);
     basis->bs_norm = (double **)malloc(sizeof(double *) * basis->bs_nshells);
     basis->bs_eptr = (int *)malloc(sizeof(int) * basis->bs_nelements);
-    basis->bs_atom_start = (int *)malloc(sizeof(int) * (basis->bs_natoms + 1)); 
+    basis->bs_atom_start = (int *)malloc(sizeof(int) * (basis->bs_natoms + 1));
     basis->bs_momentum = (int *)malloc(sizeof(int) * basis->bs_nshells);
     basis->bs_nexp = (int *)malloc(sizeof(int) * basis->bs_nshells);
     CINT_ASSERT(basis->bs_cc != NULL);
@@ -416,7 +416,7 @@ CIntStatus_t CInt_unpackBasisSet (BasisSet_t basis, void *buf)
         return ret;
     }
 
-    return CINT_STATUS_SUCCESS;    
+    return CINT_STATUS_SUCCESS;
 }
 
 
@@ -426,7 +426,7 @@ CIntStatus_t CInt_unpackBasisSet (BasisSet_t basis, void *buf)
 
 
 /* Read the xyz file and put data into the BasisSet_t structure.
- * 
+ *
  * Net charge is read from comment line of xyz file.
  * Atom positions are converted from Angstroms to Bohr.
  * basis->eid[i] is element id, i.e., atomic number.
@@ -451,31 +451,31 @@ CIntStatus_t import_molecule (char *file, BasisSet_t basis)
         return CINT_STATUS_FILEIO_FAILED;
     }
 
-    // number of atoms    
+    // number of atoms
     if (fgets (line, 1024, fp) == NULL)
     {
         CINT_PRINTF (1, "file %s has a wrong format\n", file);
-        return CINT_STATUS_FILEIO_FAILED; 
+        return CINT_STATUS_FILEIO_FAILED;
     }
-    sscanf (line, "%d", &(basis->natoms));    
+    sscanf (line, "%d", &(basis->natoms));
     if (basis->natoms <= 0)
     {
         CINT_PRINTF (1, "file %s has a wrong format\n", file);
         return CINT_STATUS_FILEIO_FAILED;
     }
-        
+
     // skip comment line
     if (fgets (line, 1024, fp) == NULL)
     {
         CINT_PRINTF (1, "file %s has a wrong format\n", file);
-        return CINT_STATUS_FILEIO_FAILED; 
+        return CINT_STATUS_FILEIO_FAILED;
     }
     basis->Q = atof(line);
-    
+
     basis->xn = (double *)malloc (sizeof(double) * basis->natoms);
     basis->yn = (double *)malloc (sizeof(double) * basis->natoms);
     basis->zn = (double *)malloc (sizeof(double) * basis->natoms);
-    basis->charge = (double *)malloc (sizeof(double) * basis->natoms); 
+    basis->charge = (double *)malloc (sizeof(double) * basis->natoms);
     basis->eid = (int *)malloc (sizeof(int) * basis->natoms);
     if (NULL == basis->xn ||
         NULL == basis->yn ||
@@ -493,13 +493,13 @@ CIntStatus_t import_molecule (char *file, BasisSet_t basis)
     while (fgets (line, 1024, fp) != NULL)
     {
         nsc = sscanf (line, "%s %lf %lf %lf",
-                      str, &(basis->xn[natoms]), 
+                      str, &(basis->xn[natoms]),
                       &(basis->yn[natoms]), &(basis->zn[natoms]));
         if (isalpha(str[0]))
         {
             basis->xn[natoms] = basis->xn[natoms] * A2BOHR;
             basis->yn[natoms] = basis->yn[natoms] * A2BOHR;
-            basis->zn[natoms] = basis->zn[natoms] * A2BOHR;   
+            basis->zn[natoms] = basis->zn[natoms] * A2BOHR;
             if (strlen(str) > MAXATOMNAME || nsc == EOF)
             {
                 CINT_PRINTF (1, "atom %s in %s is not supported\n", str, file);
@@ -545,9 +545,9 @@ CIntStatus_t import_molecule (char *file, BasisSet_t basis)
         }
     }
     basis->ene_nuc = ene;
-    
+
     fclose (fp);
-    
+
     return CINT_STATUS_SUCCESS;
 }
 
@@ -589,7 +589,7 @@ CIntStatus_t import_basis (char *file, BasisSet_t basis)
     if (fgets (line, 1024, fp) == NULL)
     {
         CINT_PRINTF (1, "file %s has a wrong format\n", file);
-        return CINT_STATUS_FILEIO_FAILED;    
+        return CINT_STATUS_FILEIO_FAILED;
     }
     sscanf (line, "%s", str);
     if (strcmp (str, "cartesian") == 0)
@@ -696,7 +696,7 @@ CIntStatus_t import_basis (char *file, BasisSet_t basis)
                     if (nexp <= 0 || ns <= 0 || ns > MAXNS)
                     {
                         CINT_PRINTF (1, "file %s contains invalid values\n", file);
-                        return CINT_STATUS_INVALID_VALUE;                        
+                        return CINT_STATUS_INVALID_VALUE;
                     }
                     mark = ftell (fp);
                     for (i = 0; i < ns; i++) // usually ns==1, but ns==2 for SP shells
@@ -720,7 +720,7 @@ CIntStatus_t import_basis (char *file, BasisSet_t basis)
                         {
                             CINT_PRINTF (1, "shell %s in file %s is not supported\n",
                                 str, file);
-                            return CINT_STATUS_INVALID_VALUE;  
+                            return CINT_STATUS_INVALID_VALUE;
                         }
                         fseek (fp, mark, SEEK_SET);
                         for (j = 0; j < basis->bs_nexp[nshells]; j++)
@@ -754,13 +754,13 @@ CIntStatus_t import_basis (char *file, BasisSet_t basis)
     if (nshells != basis->bs_nshells || basis->bs_totnexp != bs_totnexp)
     {
         CINT_PRINTF (1, "file %s has a wrong format\n", file);
-        return CINT_STATUS_FILEIO_FAILED;    
+        return CINT_STATUS_FILEIO_FAILED;
     }
 
     fclose (fp);
 
     normalization (basis);
-    
+
     return CINT_STATUS_SUCCESS;
 }
 
@@ -774,7 +774,7 @@ CIntStatus_t import_basis (char *file, BasisSet_t basis)
  * for carbon, etc.
  *
  * If a guess file for an element is not found, or an inappropriate file is
- * found (e.g., does not match number of functions because it is for a 
+ * found (e.g., does not match number of functions because it is for a
  * different basis set), then a zero initial guess for that atom is used.
  */
 CIntStatus_t import_guess(char *file, BasisSet_t basis)
@@ -787,14 +787,14 @@ CIntStatus_t import_guess(char *file, BasisSet_t basis)
     }
 
     char fname[1024];
-    char line[1024];    
+    char line[1024];
     // pointers to guess for each element in basis set
-    basis->guess = (double **)malloc (sizeof(double *) * basis->bs_natoms); 
+    basis->guess = (double **)malloc (sizeof(double *) * basis->bs_natoms);
     if (basis->guess == NULL)
     {
         return CINT_STATUS_ALLOC_FAILED;
     }
-     
+
     // loop over elements in the basis set
     for (int i = 0; i < basis->bs_natoms; i++)
     {
@@ -849,17 +849,17 @@ CIntStatus_t import_guess(char *file, BasisSet_t basis)
         } else {
             flag = 1;
         }
-end:        
+end:
         if (flag == 1) {
             memset(basis->guess[i], 0,
-                sizeof(double) * nfunctions * nfunctions);          
+                sizeof(double) * nfunctions * nfunctions);
         }
         else
         {
             CINT_PRINTF (1, "Using SAD file for %s\n", etable[eid]);
         }
     }
-    
+
     if (file != NULL) {
         free(dir);
     }
@@ -876,8 +876,8 @@ CIntStatus_t CInt_packBasisSet (BasisSet_t basis,
     int offset;
     int i;
     int nexp;
-    
-    _bufsize = 6 * sizeof(int) + (4 * basis->natoms) * sizeof(double) +                
+
+    _bufsize = 6 * sizeof(int) + (4 * basis->natoms) * sizeof(double) +
                (2 * basis->bs_nshells + basis->bs_nelements + basis->natoms
                 + basis->bs_natoms + 3) * sizeof(int) +
                 basis->bs_totnexp * 3 * sizeof(double);
@@ -930,13 +930,13 @@ CIntStatus_t CInt_packBasisSet (BasisSet_t basis,
     offset += sizeof(int) * (basis->bs_natoms + 1);
     memcpy(&(_buf[offset]), basis->bs_momentum, sizeof(int) * basis->bs_nshells);
     offset += sizeof(int) * basis->bs_nshells;
-    
+
     assert (offset == _bufsize);
 
     *bufsize = _bufsize;
     *buf = (void *)_buf;
 
-    return CINT_STATUS_SUCCESS; 
+    return CINT_STATUS_SUCCESS;
 }
 
 
@@ -964,7 +964,7 @@ CIntStatus_t CInt_importBasisSet(BasisSet_t basis,
     CINT_ASSERT(natoms > 0);
     CINT_ASSERT(nshells > 0);
     CINT_ASSERT(nprims > 0);
-    
+
     basis->bs_eptr = (int *)malloc(sizeof(int) * basis->bs_nelements);
     basis->bs_atom_start = (int *)malloc(sizeof(int) * (natoms + 1));
     basis->bs_nexp = (int *)malloc(sizeof(int) * nshells);
@@ -991,7 +991,7 @@ CIntStatus_t CInt_importBasisSet(BasisSet_t basis,
         basis->bs_atom_start[i + 1] =
             basis->bs_atom_start[i] + shells_p_atom[i];
         int start_shell = basis->bs_atom_start[i];
-        int end_shell = basis->bs_atom_start[i + 1];    
+        int end_shell = basis->bs_atom_start[i + 1];
         for (int j = start_shell; j < end_shell; j++) {
             CINT_ASSERT(j < nshells);
             int nexp = prims_p_shell[j];
@@ -1010,18 +1010,18 @@ CIntStatus_t CInt_importBasisSet(BasisSet_t basis,
             memcpy(basis->bs_cc[j], &cc[start_prim], sizeof(double) * nexp);
             memcpy(basis->bs_exp[j], &alpha[start_prim], sizeof(double) * nexp);
             start_prim += nexp;
-            num_prims += nexp;           
+            num_prims += nexp;
         }
     }
     CINT_ASSERT(num_prims == basis->bs_totnexp);
     normalization(basis);
-    
+
     // import molecule
     basis->natoms = natoms;
     basis->xn = (double *)malloc(sizeof(double) * basis->natoms);
     basis->yn = (double *)malloc(sizeof(double) * basis->natoms);
     basis->zn = (double *)malloc(sizeof(double) * basis->natoms);
-    basis->charge = (double *)malloc(sizeof(double) * basis->natoms); 
+    basis->charge = (double *)malloc(sizeof(double) * basis->natoms);
     basis->eid = (int *)malloc(sizeof(int) * basis->natoms);
     if (NULL == basis->xn ||
         NULL == basis->yn ||
@@ -1085,7 +1085,7 @@ CIntStatus_t CInt_loadBasisSet (BasisSet_t basis, char *bsfile, char *molfile)
     {
         return status;
     }
-    
+
     // parse xyz
     if ((status = parse_molecule (basis)) != CINT_STATUS_SUCCESS)
     {
@@ -1097,7 +1097,7 @@ CIntStatus_t CInt_loadBasisSet (BasisSet_t basis, char *bsfile, char *molfile)
     {
         return status;
     }
-    
+
     return CINT_STATUS_SUCCESS;
 }
 

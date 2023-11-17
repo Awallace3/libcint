@@ -1,14 +1,14 @@
 alignlen = 64
 
 # For normal cluster
-# CXX = icpc
-# CC  = icc
-# FC  = ifort
+CXX = icpc
+CC  = icc
+FC  = ifort
 
 # For Cori (use Intel compilers by default)
-CXX = CC
-CC  = cc -std=gnu99
-FC  = ftn
+# CXX = CC
+# CC  = cc -std=gnu99
+# FC  = ftn
 
 AR  = xiar rcs
 
