@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(CInt LANGUAGES C CXX Fortran)
 
 # Include the CIntConfig.cmake script
-include(CIntConfig.cmake)
+include(share/cmake/CInt/CIntConfig.cmake)
 
 # Specify the public headers for the libcint library
 set(PUBLIC_HEADERS

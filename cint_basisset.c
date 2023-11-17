@@ -28,6 +28,12 @@
 #include <cint_config.h>
 #include <cint_basisset.h>
 
+//#ifndef _mm_malloc
+//#include <stdlib.h>
+//#define _mm_malloc(size, alignment)  aligned_alloc(alignment, size)
+//#define _mm_free(addr)  free(addr)
+//#endif
+
 
 #ifdef HAS_MALLOC_H
 #include <malloc.h>

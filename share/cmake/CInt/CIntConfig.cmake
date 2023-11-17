@@ -13,16 +13,16 @@ set(CInt_INCLUDE_DIRS "${CInt_CMAKE_DIR}/include")
 
 # Source files
 set(CInt_SRC
-    ${CMAKE_CURRENT_LIST_DIR}/cint_basisset.c
-    ${CMAKE_CURRENT_LIST_DIR}/erd_integral.c
-    ${CMAKE_CURRENT_LIST_DIR}/oed_integral.c
-    ${CMAKE_CURRENT_LIST_DIR}/cint_simint.c
+    ${CMAKE_CURRENT_LIST_DIR}/../../../cint_basisset.c
+    ${CMAKE_CURRENT_LIST_DIR}/../../../erd_integral.c
+    ${CMAKE_CURRENT_LIST_DIR}/../../../oed_integral.c
+    ${CMAKE_CURRENT_LIST_DIR}/../../../cint_simint.c
 )
 
 # Include directories
 # set(SIMINT_DIR "/global/homes/h/huangh/scratch/gtfock-simint/build-avx512/install")
 include_directories(${SIMINT_DIR}/include
-    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/../../../
     )
 
 # Compiler flags
@@ -33,3 +33,4 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__ALIGNLEN__=${alignlen}")
 
 # The libcint library
 add_library(cint STATIC ${CInt_SRC})
+target_compile_features(cint PRIVATE c_std_11)
