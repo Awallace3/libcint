@@ -1,2 +1,4 @@
 build
 objdir_cint
+lib
+include
