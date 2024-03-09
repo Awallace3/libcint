@@ -20,12 +20,14 @@ set(OPTFLAGS "-m64" CACHE STRING "Optimization flags")
 set(CInt_INCLUDE_DIRS "${CInt_CMAKE_DIR}/include")
 
 # Source files
-set(CInt_SRC
-    ${CMAKE_CURRENT_LIST_DIR}/cint_basisset.c
-    ${CMAKE_CURRENT_LIST_DIR}/erd_integral.c
-    ${CMAKE_CURRENT_LIST_DIR}/oed_integral.c
-    ${CMAKE_CURRENT_LIST_DIR}/cint_simint.c
-)
+# set(CInt_SRC
+#     ${CMAKE_CURRENT_LIST_DIR}/cint_basisset.c
+#     ${CMAKE_CURRENT_LIST_DIR}/erd_integral.c
+#     ${CMAKE_CURRENT_LIST_DIR}/oed_integral.c
+#     ${CMAKE_CURRENT_LIST_DIR}/cint_simint.c
+# )
+# Get all *.c files in the current directory
+file(GLOB CInt_SRC ${CMAKE_CURRENT_LIST_DIR}/*.c)
 
 # Include directories
 include_directories(${SIMINT_DIR}/include
@@ -33,16 +35,21 @@ include_directories(${SIMINT_DIR}/include
     )
 
 # Compiler flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -qopenmp -g -diag-disable=10441 -fPIC")
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -qopenmp -g -diag-disable=10441 -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fopenmp -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas -Wunused-variable")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPTFLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__ALIGNLEN__=${alignlen}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-undef")
 
 # The libcint library
 add_library(cint ${CInt_SRC})
 #target_compile_features(cint PRIVATE c_std_11 ${SIMINT_LIBRARIES})
 target_include_directories(cint PUBLIC ${CInt_INCLUDE_DIRS} ${simint_INCLUDE_DIRS})
-target_link_libraries(cint PRIVATE ${simint_LIBRARIES})
+message(STATUS "SIMINT_LIBRARIES: ${simint_LIBRARIES}")
+target_link_libraries(cint PRIVATE ${simint_LIBRARIES} m erd oed)
+# target_link_libraries(cint PRIVATE ${simint_LIBRARIES} m ${ERD_STATIC})
+target_link_options(cint PRIVATE "-Wl,-z,defs")
 
 # Specify the public headers for the libcint library
 file(GLOB PUBLIC_HEADERS "*.h")
