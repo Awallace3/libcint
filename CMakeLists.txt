@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(CInt LANGUAGES C CXX Fortran)
 
-# Include the CIntConfig.cmake script
-# include(share/cmake/CInt/CIntConfig.cmake)
-# Set the alignment length
 set(alignlen 64 CACHE STRING "Alignment length")
 
 find_package(simint REQUIRED)
@@ -11,11 +8,6 @@ find_package(erd REQUIRED)
 find_package(oed REQUIRED)
 message(STATUS "SIMINT_FOUND: ${simint_INCLUDE_DIRS}")
 message(STATUS "SIMINT_LIBRARIES: ${simint_LIBRARIES}")
-#get_cmake_property(_variableNames VARIABLES)
-#list (SORT _variableNames)
-#foreach (_variableName ${_variableNames})
-#    message(STATUS "${_variableName}=${${_variableName}}")
-#endforeach()
 
 # Optimization flags
 set(OPTFLAGS "-m64" CACHE STRING "Optimization flags")
@@ -39,8 +31,11 @@ include_directories(${SIMINT_DIR}/include
     )
 
 # Compiler flags
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -qopenmp -g -diag-disable=10441 -fPIC")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fopenmp -g")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fopenmp -g -fPIC")
+elseif (CMAKE_C_COMPILER_ID STREQUAL "Intel")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -fopenmp -g -diag-disable=10441 -fPIC")
+endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas -Wunused-variable")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPTFLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__ALIGNLEN__=${alignlen}")
